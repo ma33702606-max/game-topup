@@ -1,0 +1,51 @@
+name: game_topup
+description: تطبيق شحن الألعاب الرقمية - GameTopup
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  firebase_storage: ^11.6.0
+  firebase_messaging: ^14.7.10
+  flutter_local_notifications: ^16.3.3
+
+  # State Management
+  flutter_riverpod: ^2.4.10
+
+  # Navigation
+  go_router: ^13.2.0
+
+  # UI
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.5.0
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  carousel_slider: ^4.2.1
+
+  # Utils
+  image_picker: ^1.0.7
+  url_launcher: ^6.2.4
+  intl: ^0.19.0
+  shared_preferences: ^2.2.2
+  permission_handler: ^11.3.0
+  http: ^1.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/

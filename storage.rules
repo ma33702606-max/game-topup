@@ -1,0 +1,60 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        firestore.exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isImageFile() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isUnder5MB() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // ── Payment proofs ────────────────────────────────────────────────────────
+    // Path: payment_proofs/{userId}/{orderId}/proof.{ext}
+    match /payment_proofs/{userId}/{orderId}/{fileName} {
+      // Only the owner can upload their own proof
+      allow write: if isSignedIn()
+          && request.auth.uid == userId
+          && isImageFile()
+          && isUnder5MB();
+
+      // Owner or admin can read
+      allow read: if isSignedIn()
+          && (request.auth.uid == userId || isAdmin());
+
+      // No delete (preserve audit trail)
+      allow delete: if false;
+    }
+
+    // ── Game images (admin only) ──────────────────────────────────────────────
+    match /game_images/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isImageFile() && isUnder5MB();
+      allow delete: if isAdmin();
+    }
+
+    // ── Banner images (admin only) ────────────────────────────────────────────
+    match /banner_images/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isImageFile() && isUnder5MB();
+      allow delete: if isAdmin();
+    }
+
+    // Deny everything else by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
